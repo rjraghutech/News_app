@@ -7,28 +7,43 @@ export default class News extends Component {
     super();
     this.state = {
       articles: this.articles,
-      loading: false
+      loading: false,
+      page: 1
     }
   }
   async componentDidMount(){
-    let apiUrl = 'https://newsapi.org/v2/top-headlines?country=in&apiKey=f5ecbfbf67644284b3c96e4520b0d9a9';
+    let apiUrl = 'https://newsapi.org/v2/top-headlines?country=in&apiKey=f5ecbfbf67644284b3c96e4520b0d9a9&page=1&pagesize=21';
     let data = await fetch(apiUrl);
     let parsedData = await data.json();
     this.setState(this.articles=parsedData.articles);
-    
+  }
+  handelPrev = async () =>{
+    let apiUrl = `https://newsapi.org/v2/top-headlines?country=in&apiKey=f5ecbfbf67644284b3c96e4520b0d9a9&page=${this.state.page - 1}&pagesize=21`;
+    let data = await fetch(apiUrl);
+    let parsedData = await data.json();
+    this.setState(this.articles=parsedData.articles);
+  }
+  handleNext = async () =>{
+    console.log('next')
+    let apiUrl = `https://newsapi.org/v2/top-headlines?country=in&apiKey=f5ecbfbf67644284b3c96e4520b0d9a9&page=${this.state.page + 1}&pagesize=21`;
+    let data = await fetch(apiUrl);
+    let parsedData = await data.json();
+    this.setState(this.articles=parsedData.articles);
   }
   
   render() {
-    console.log(this.articles);
     return (
       <div className='container my-3'>
         <div className="row my-3">
           {this.articles.map((element) => {
             return <div className='col-md-4 my-2' key={element.url}>
-              <NewsItem title={element.title?element.title.slice(0,40):''} description={element.description?element.description.slice(0,90):''} imgUrl={element.urlToImage} newsUrl={element.url}/>
+              <NewsItem title={element.title?element.title.slice(0,40):''} description={element.description?element.description.slice(0,90):''} imgUrl={element.urlToImage?element.urlToImage:'https://images.hindustantimes.com/tech/img/2022/12/30/1600x900/onur-binay--WJQYRbgRLk-unsplash_1672394312148_1672394327564_1672394327564.jpg'} newsUrl={element.url}/>
             </div>
           })}
-          
+        </div>
+        <div className="container d-flex justify-content-between">
+          <button className="btn btn-primary btn-sm" onClick={this.handelPrev}>&larr; Previous</button>
+          <button className="btn btn-primary btn-sm" onClick={this.handleNext}>Next &rarr;</button>
         </div>
       </div>
     )
